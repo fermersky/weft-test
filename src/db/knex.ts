@@ -2,7 +2,7 @@ import Knex from "knex";
 import { User } from "./entities/User.js";
 import { Group } from "./entities/Group.js";
 
-import { v4 as uuid } from "uuid";
+import { ulid } from "ulid";
 
 export const knex = Knex({
   client: "pg",
@@ -20,8 +20,8 @@ async function createUserRelation() {
   await knex.raw("DROP TABLE IF EXISTS users CASCADE;");
 
   await knex.schema.createTable("users", (table) => {
-    table.uuid("id").primary();
-    table.uuid("groupId").references("groups.id");
+    table.string("id").primary();
+    table.string("groupId").references("groups.id");
     table.string("name").notNullable();
     table.string("email").notNullable();
   });
@@ -31,14 +31,14 @@ async function createGroupsRelation() {
   await knex.raw("DROP TABLE IF EXISTS groups CASCADE;");
 
   await knex.schema.createTable("groups", (table) => {
-    table.uuid("id").primary();
+    table.string("id").primary();
     table.string("name").notNullable();
     table.string("status").nullable();
   });
 }
 
 async function initializeSeedData() {
-  const basicGroupId = uuid();
+  const basicGroupId = ulid();
 
   await Group.query(knex).insert({
     id: basicGroupId,
@@ -47,21 +47,21 @@ async function initializeSeedData() {
   });
 
   await User.query(knex).insert({
-    id: uuid(),
+    id: ulid(),
     name: "Dan",
     email: "dan@gmail.com",
-    // groupId: basicGroupId,
+    groupId: basicGroupId,
   });
 
   await User.query(knex).insert({
-    id: uuid(),
+    id: ulid(),
     name: "Ann",
     email: "ann@gmail.com",
     groupId: basicGroupId,
   });
 
   await User.query(knex).insert({
-    id: uuid(),
+    id: ulid(),
     name: "Max",
     email: "max@gmail.com",
     groupId: basicGroupId,
