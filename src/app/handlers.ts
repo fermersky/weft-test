@@ -7,6 +7,8 @@ export async function handleErrors(
   try {
     return await cb();
   } catch (error) {
+    console.log(error);
+
     if (error instanceof ZodError) {
       return { data: null, error: error, status: 400 };
     }

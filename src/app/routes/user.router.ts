@@ -1,6 +1,7 @@
 import { Router } from "express";
 import { userRepository } from "../../db/repositories/index.js";
 import {
+  CreateUserBodySchema,
   FindUserByEmailQueryParams,
   FindUserByNameQueryParams,
   PaginateUsersQueryParams,
@@ -8,7 +9,7 @@ import {
 } from "./user.validation.js";
 import { handleErrors } from "../handlers.js";
 
-const router = Router();
+const router: Router = Router();
 
 router.get("/paginate", async (req, res) => {
   const result = await handleErrors(async () => {
@@ -17,6 +18,17 @@ router.get("/paginate", async (req, res) => {
     const page = await userRepository.paginate(limit, nextToken);
 
     return { data: page, status: 200 };
+  });
+
+  res.status(result.status).json(result);
+});
+
+router.post("/create", async (req, res) => {
+  const result = await handleErrors(async () => {
+    const userRequestPayload = await CreateUserBodySchema.parseAsync(req.body);
+    const user = await userRepository.create(userRequestPayload);
+
+    return { data: user, status: 201 };
   });
 
   res.status(result.status).json(result);

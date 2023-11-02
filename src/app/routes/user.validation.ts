@@ -16,3 +16,13 @@ export const FindUserByEmailQueryParams = z.object({
 export const RemoveUserFromGroupQueryParams = z.object({
   userId: z.string().ulid(),
 });
+
+export const CreateUserBodySchema = z.object({
+  name: z.string(),
+  email: z.string().email(),
+  groupId: z
+    .string()
+    .ulid()
+    .nullish()
+    .transform((x) => x ?? undefined),
+});

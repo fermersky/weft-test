@@ -1,12 +1,13 @@
-import Knex from "knex";
-import { User } from "../entities/User.js";
+import type { Knex } from "knex";
+import { UserModel, type User } from "../entities/User.js";
 import { AppError } from "../../app/errors.js";
+import { ulid } from "ulid";
 
 export class KnexUserRepository {
-  constructor(private knex: Knex.Knex) {}
+  constructor(private knex: Knex) {}
 
   async paginate(limit: number = 5, nextToken: string) {
-    const users = await User.query(this.knex)
+    const users = await UserModel.query(this.knex)
       .where("id", ">", nextToken)
       .limit(limit + 1);
 
@@ -19,11 +20,24 @@ export class KnexUserRepository {
     return { hasNext, users };
   }
 
-  async findByName(name: string) {
+  async create(data: Omit<User, "id">): Promise<User> {
+    const user = await UserModel.query(this.knex)
+      .insert({
+        id: ulid(),
+        name: data.name,
+        email: data.email,
+        groupId: data.groupId,
+      })
+      .returning(["id", "name", "email", "groupId"]);
+
+    return user;
+  }
+
+  async findByName(name: string): Promise<User[]> {
     return this.findBy("name", name);
   }
 
-  async findByEmail(email: string) {
+  async findByEmail(email: string): Promise<User[]> {
     return this.findBy("email", email);
   }
 
@@ -33,7 +47,7 @@ export class KnexUserRepository {
     const trx = await this.knex.transaction();
 
     try {
-      const targetUser = await trx<User>("users").where({ id: userId });
+      const targetUser = await trx<UserModel>("users").where({ id: userId });
 
       if (targetUser?.length === 0) {
         throw new AppError("User not found");
@@ -71,7 +85,7 @@ export class KnexUserRepository {
     }
   }
 
-  private async findBy(col: string, val: string) {
-    return await User.query(this.knex).where({ [col]: val });
+  private async findBy(col: string, val: string): Promise<User[]> {
+    return await UserModel.query(this.knex).where({ [col]: val });
   }
 }

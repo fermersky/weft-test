@@ -4,6 +4,7 @@ import UserRouter from "./app/routes/user.router.js";
 
 const httpApp = express();
 
+httpApp.use(express.json());
 httpApp.use(UserRouter);
 
 async function main() {

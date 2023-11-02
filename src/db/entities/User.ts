@@ -1,6 +1,13 @@
 import { Model } from "objection";
 
-export class User extends Model {
+export interface User {
+  id: string;
+  name: string;
+  email: string;
+  groupId?: string;
+}
+
+export class UserModel extends Model implements User {
   id!: string;
   name!: string;
   email!: string;
