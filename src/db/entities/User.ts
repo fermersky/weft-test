@@ -1,14 +1,14 @@
 import { Model } from "objection";
 
 export interface User {
-  id: string;
+  userId: string;
   name: string;
   email: string;
   groupId?: string;
 }
 
 export class UserModel extends Model implements User {
-  id!: string;
+  userId!: string;
   name!: string;
   email!: string;
   groupId?: string;
@@ -17,12 +17,16 @@ export class UserModel extends Model implements User {
     return "users";
   }
 
+  static get idColumn() {
+    return "userId";
+  }
+
   static get jsonSchema() {
     return {
       type: "object",
-      required: ["id", "name", "email"],
+      required: ["userId", "name", "email"],
       properties: {
-        id: { type: "string" },
+        userId: { type: "string" },
         name: { type: "string", minLength: 1, maxLength: 255 },
         email: { type: "string", minLength: 1, maxLength: 255 },
         groupId: { type: "string" },

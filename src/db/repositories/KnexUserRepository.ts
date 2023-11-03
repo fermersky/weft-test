@@ -8,7 +8,7 @@ export class KnexUserRepository {
 
   async paginate(limit: number = 5, nextToken: string) {
     const users = await UserModel.query(this.knex)
-      .where("id", ">", nextToken)
+      .where("userId", ">", nextToken)
       .limit(limit + 1);
 
     const hasNext = users.length === limit + 1;
@@ -20,15 +20,15 @@ export class KnexUserRepository {
     return { hasNext, users };
   }
 
-  async create(data: Omit<User, "id">): Promise<User> {
+  async create(data: Omit<User, "userId">): Promise<User> {
     const user = await UserModel.query(this.knex)
       .insert({
-        id: ulid(),
+        userId: ulid(),
         name: data.name,
         email: data.email,
         groupId: data.groupId,
       })
-      .returning(["id", "name", "email", "groupId"]);
+      .returning(["userId", "name", "email", "groupId"]);
 
     return user;
   }
@@ -47,7 +47,7 @@ export class KnexUserRepository {
     const trx = await this.knex.transaction();
 
     try {
-      const targetUser = await trx<UserModel>("users").where({ id: userId });
+      const targetUser = await trx<UserModel>("users").where({ userId });
 
       if (targetUser?.length === 0) {
         throw new AppError("User not found");
@@ -59,7 +59,7 @@ export class KnexUserRepository {
 
       const targetGroupId = targetUser[0].groupId;
 
-      await trx("users").where({ id: userId }).update({ groupId: null });
+      await trx("users").where({ userId }).update({ groupId: null });
 
       const countOfUsersInGroup = await trx("users").count().where({
         groupId: targetGroupId,
@@ -68,7 +68,7 @@ export class KnexUserRepository {
       let groupStatus = "NotEmpty";
 
       if (countOfUsersInGroup[0].count == 0) {
-        await trx("groups").where({ id: targetGroupId }).update({ status: "Empty" }).returning("status");
+        await trx("groups").where({ groupId: targetGroupId }).update({ status: "Empty" }).returning("status");
 
         groupStatus = "Empty";
       }
