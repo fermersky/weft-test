@@ -6,8 +6,9 @@ import { ulid } from "ulid";
 export class KnexUserRepository {
   constructor(private knex: Knex) {}
 
-  async paginate(limit: number = 5, nextToken: string) {
+  async paginate(limit: number = 5, nextToken: string): Promise<{ hasNext: boolean; users: User[] }> {
     const users = await UserModel.query(this.knex)
+      .withGraphFetched("group")
       .where("userId", ">", nextToken)
       .limit(limit + 1);
 

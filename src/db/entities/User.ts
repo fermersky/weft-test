@@ -1,9 +1,11 @@
 import { Model } from "objection";
+import { GroupModel, type Group } from "./Group.js";
 
 export interface User {
   userId: string;
   name: string;
   email: string;
+  group?: Group;
   groupId?: string;
 }
 
@@ -11,6 +13,7 @@ export class UserModel extends Model implements User {
   userId!: string;
   name!: string;
   email!: string;
+  group?: Group;
   groupId?: string;
 
   static get tableName() {
@@ -20,6 +23,17 @@ export class UserModel extends Model implements User {
   static get idColumn() {
     return "userId";
   }
+
+  static relationMappings = {
+    group: {
+      relation: Model.HasOneRelation,
+      modelClass: GroupModel,
+      join: {
+        from: "users.groupId",
+        to: "groups.groupId",
+      },
+    },
+  };
 
   static get jsonSchema() {
     return {

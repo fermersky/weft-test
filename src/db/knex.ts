@@ -1,6 +1,6 @@
 import Knex from "knex";
 import { UserModel } from "./entities/User.js";
-import { Group } from "./entities/Group.js";
+import { GroupModel } from "./entities/Group.js";
 
 import { ulid } from "ulid";
 
@@ -40,7 +40,7 @@ async function createGroupsRelation() {
 async function initializeSeedData() {
   const basicGroupId = ulid();
 
-  await Group.query(knex).insert({
+  await GroupModel.query(knex).insert({
     groupId: basicGroupId,
     name: "Group 1",
     status: "NotEmpty",
@@ -57,7 +57,7 @@ async function initializeSeedData() {
     userId: ulid(),
     name: "Ann",
     email: "ann@gmail.com",
-    groupId: basicGroupId,
+    // groupId: basicGroupId,
   });
 
   await UserModel.query(knex).insert({

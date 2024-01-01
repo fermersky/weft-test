@@ -2,7 +2,13 @@ import { Model } from "objection";
 
 export type GroupStatus = "NotEmpty" | "Empty";
 
-export class Group extends Model {
+export interface Group {
+  status: string;
+  name: string;
+  groupId: string;
+}
+
+export class GroupModel extends Model implements Group {
   groupId!: string;
   name!: string;
   status!: string;
