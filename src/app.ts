@@ -1,3 +1,5 @@
+import "dotenv/config";
+
 import express from "express";
 import { createDbSchema } from "./db/knex.js";
 import UserRouter from "./app/routes/user.router.js";

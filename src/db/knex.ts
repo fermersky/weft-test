@@ -8,13 +8,15 @@ export const knex = Knex({
   client: "pg",
 
   connection: {
-    host: "localhost",
+    host: process.env["PG_HOST"],
     port: 5432,
     user: "postgres",
     database: "weft",
     password: "postgres",
   },
 });
+
+knex.raw("SELECT 1").then(() => console.log("🧳 successfully connected to the db"));
 
 async function createUserRelation() {
   await knex.raw("DROP TABLE IF EXISTS users CASCADE;");
