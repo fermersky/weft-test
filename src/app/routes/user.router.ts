@@ -1,4 +1,4 @@
-import { Router } from "express";
+import type { FastifyInstance, FastifyRequest, FastifyReply } from "fastify";
 import { userRepository } from "../../db/repositories/index.js";
 import {
   CreateUserBodySchema,
@@ -9,64 +9,64 @@ import {
 } from "./user.validation.js";
 import { handleErrors } from "../handlers.js";
 
-const router: Router = Router();
+const userRoutes = async (fastify: FastifyInstance) => {
+  fastify.get("/paginate", async (request: FastifyRequest, reply: FastifyReply) => {
+    const result = await handleErrors(async () => {
+      const { limit, nextToken } = await PaginateUsersQueryParams.parseAsync(request.query);
 
-router.get("/paginate", async (req, res) => {
-  const result = await handleErrors(async () => {
-    const { limit, nextToken } = await PaginateUsersQueryParams.parseAsync(req.query);
+      const page = await userRepository.paginate(limit, nextToken);
 
-    const page = await userRepository.paginate(limit, nextToken);
+      return { data: page, status: 200 };
+    });
 
-    return { data: page, status: 200 };
+    reply.status(result.status).send(result);
   });
 
-  res.status(result.status).json(result);
-});
+  fastify.post("/create", async (request: FastifyRequest, reply: FastifyReply) => {
+    const result = await handleErrors(async () => {
+      const userRequestPayload = await CreateUserBodySchema.parseAsync(request.body);
+      const user = await userRepository.create(userRequestPayload);
 
-router.post("/create", async (req, res) => {
-  const result = await handleErrors(async () => {
-    const userRequestPayload = await CreateUserBodySchema.parseAsync(req.body);
-    const user = await userRepository.create(userRequestPayload);
+      return { data: user, status: 201 };
+    });
 
-    return { data: user, status: 201 };
+    reply.status(result.status).send(result);
   });
 
-  res.status(result.status).json(result);
-});
+  fastify.get("/find-by-name/:name", async (request: FastifyRequest, reply: FastifyReply) => {
+    const result = await handleErrors(async () => {
+      const { name } = await FindUserByNameQueryParams.parseAsync(request.params);
 
-router.get("/find-by-name/:name", async (req, res) => {
-  const result = await handleErrors(async () => {
-    const { name } = await FindUserByNameQueryParams.parseAsync(req.params);
+      const users = await userRepository.findByName(name);
 
-    const users = await userRepository.findByName(name);
+      return { data: users, status: 200 };
+    });
 
-    return { data: users, status: 200 };
+    reply.status(result.status).send(result);
   });
 
-  res.status(result.status).json(result);
-});
+  fastify.get("/find-by-email/:email", async (request: FastifyRequest, reply: FastifyReply) => {
+    const result = await handleErrors(async () => {
+      const { email } = await FindUserByEmailQueryParams.parseAsync(request.params);
 
-router.get("/find-by-email/:email", async (req, res) => {
-  const result = await handleErrors(async () => {
-    const { email } = await FindUserByEmailQueryParams.parseAsync(req.params);
+      const users = await userRepository.findByEmail(email);
 
-    const users = await userRepository.findByEmail(email);
+      return { data: users, status: 200 };
+    });
 
-    return { data: users, status: 200 };
+    reply.status(result.status).send(result);
   });
 
-  res.status(result.status).json(result);
-});
+  fastify.get("/remove-from-group/:userId", async (request: FastifyRequest, reply: FastifyReply) => {
+    const result = await handleErrors(async () => {
+      const { userId } = await RemoveUserFromGroupQueryParams.parseAsync(request.params);
+      const groupId = await userRepository.removeUserFromGroup(userId);
 
-router.get("/remove-from-group/:userId", async (req, res) => {
-  const result = await handleErrors(async () => {
-    const { userId } = await RemoveUserFromGroupQueryParams.parseAsync(req.params);
-    const groupId = await userRepository.removeUserFromGroup(userId);
+      return { data: { groupId }, status: 200 };
+    });
 
-    return { data: { groupId }, status: 200 };
+    reply.status(result.status).send(result);
   });
+};
 
-  res.status(result.status).json(result);
-});
-
-export default router;
+export default userRoutes;

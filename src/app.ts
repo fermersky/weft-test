@@ -1,19 +1,24 @@
 import "dotenv/config";
 
-import express from "express";
+import fastify from "fastify";
 import { createDbSchema } from "./db/knex.js";
 import UserRouter from "./app/routes/user.router.js";
 
-const httpApp = express();
+const app = fastify();
 
-httpApp.use(express.json());
-httpApp.use(UserRouter);
+app.register(UserRouter);
+
+app.addHook("onReady", (done) => {
+  console.log("🚀 server is running on port 8000");
+
+  done();
+});
 
 async function main() {
   try {
     await createDbSchema();
 
-    httpApp.listen(8000, () => console.log("🚀 server is running on port 8000"));
+    app.listen({ port: 8000 });
   } catch (er) {
     console.log(er);
   }
