@@ -1,22 +1,26 @@
 import { ZodError } from "zod";
 import { AppError } from "./errors.js";
 
-export async function handleErrors(
-  cb: () => Promise<{ data: unknown; status: number; error?: unknown }>
-): Promise<{ data: unknown; status: number; error?: unknown }> {
+type HandleResult<TData> = {
+  data?: TData;
+  status: number;
+  error?: unknown;
+};
+
+export async function handleErrors<T>(cb: () => Promise<HandleResult<T>>): Promise<HandleResult<T>> {
   try {
     return await cb();
   } catch (error) {
     console.log(error);
 
     if (error instanceof ZodError) {
-      return { data: null, error: error, status: 400 };
+      return { error, status: 400 };
     }
 
     if (error instanceof AppError) {
-      return { data: null, error: error.message, status: 400 };
+      return { error: error.message, status: 400 };
     }
 
-    return { data: null, status: 500, error: "internal server error" };
+    return { status: 500, error: "internal server error" };
   }
 }

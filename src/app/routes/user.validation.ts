@@ -1,8 +1,12 @@
 import { z } from "zod";
 
 export const PaginateUsersQueryParams = z.object({
-  limit: z.coerce.number().min(0),
   nextToken: z.coerce.string().default("0"),
+  limit: z.coerce
+    .number()
+    .min(0)
+    .nullish()
+    .transform((x) => x ?? undefined),
 });
 
 export const FindUserByNameQueryParams = z.object({

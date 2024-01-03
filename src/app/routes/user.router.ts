@@ -60,9 +60,9 @@ const userRoutes = async (fastify: FastifyInstance) => {
   fastify.get("/remove-from-group/:userId", async (request: FastifyRequest, reply: FastifyReply) => {
     const result = await handleErrors(async () => {
       const { userId } = await RemoveUserFromGroupQueryParams.parseAsync(request.params);
-      const groupId = await userRepository.removeUserFromGroup(userId);
+      const group = await userRepository.removeUserFromGroup(userId);
 
-      return { data: { groupId }, status: 200 };
+      return { data: { group }, status: 200 };
     });
 
     reply.status(result.status).send(result);
