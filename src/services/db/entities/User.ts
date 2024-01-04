@@ -1,13 +1,7 @@
 import { Model } from "objection";
-import { GroupModel, type Group } from "./Group.js";
-
-export interface User {
-  userId: string;
-  name: string;
-  email: string;
-  group?: Group;
-  groupId?: string;
-}
+import type { Group } from "@/core/group.js";
+import type { User } from "@/core/user.js";
+import { GroupModel } from "./Group.js";
 
 export class UserModel extends Model implements User {
   userId!: string;

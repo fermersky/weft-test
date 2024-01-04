@@ -1,8 +1,7 @@
 import Knex from "knex";
-import { UserModel } from "./entities/User.js";
-import { GroupModel } from "./entities/Group.js";
-
 import { ulid } from "ulid";
+import { GroupModel } from "./entities/Group.js";
+import { UserModel } from "./entities/User.js";
 
 export const knex = Knex({
   client: "pg",

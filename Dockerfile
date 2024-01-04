@@ -40,7 +40,7 @@ USER node
 COPY package.json .
 
 COPY --from=deps /usr/src/app/node_modules ./node_modules
-COPY --from=build /usr/src/app/dist/app.js ./app.js
+COPY --from=build /usr/src/app/dist .
 
 
 EXPOSE 8000

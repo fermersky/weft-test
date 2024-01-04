@@ -1,1 +1,6 @@
 printWidth: 110
+plugins: ["@trivago/prettier-plugin-sort-imports"]
+importOrder: ["^@/core/(.*)$", "^@/services/(.*)$", "^@/app/(.*)$", "^@/", "^[./]"]
+importOrderSeparation: false
+importOrderParserPlugins: ["typescript", "decorators-legacy"]
+importOrderSortSpecifiers: true

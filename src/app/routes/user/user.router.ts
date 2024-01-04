@@ -1,5 +1,7 @@
-import type { FastifyInstance, FastifyRequest, FastifyReply } from "fastify";
-import { userRepository } from "../../db/repositories/index.js";
+import type { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
+import { createUser, scheduleSignUpEmail } from "@/core/user.js";
+import { userRepository } from "@/services/db/repositories/index.js";
+import { handleErrors } from "@/app/handlers.js";
 import {
   CreateUserBodySchema,
   FindUserByEmailQueryParams,
@@ -7,7 +9,6 @@ import {
   PaginateUsersQueryParams,
   RemoveUserFromGroupQueryParams,
 } from "./user.validation.js";
-import { handleErrors } from "../handlers.js";
 
 const userRoutes = async (fastify: FastifyInstance) => {
   fastify.get("/paginate", async (request: FastifyRequest, reply: FastifyReply) => {
@@ -25,7 +26,8 @@ const userRoutes = async (fastify: FastifyInstance) => {
   fastify.post("/create", async (request: FastifyRequest, reply: FastifyReply) => {
     const result = await handleErrors(async () => {
       const userRequestPayload = await CreateUserBodySchema.parseAsync(request.body);
-      const user = await userRepository.create(userRequestPayload);
+      const user = await createUser(userRequestPayload);
+      await scheduleSignUpEmail(user);
 
       return { data: user, status: 201 };
     });

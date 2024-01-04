@@ -1,7 +1,8 @@
 import type { Knex } from "knex";
-import { UserModel, type User } from "../entities/User.js";
-import { AppError } from "../../app/errors.js";
 import { ulid } from "ulid";
+import type { User } from "@/core/user.js";
+import { UserModel } from "@/services/db/entities/User.js";
+import { AppError } from "@/app/errors.js";
 
 export class KnexUserRepository {
   constructor(private knex: Knex) {}
@@ -43,7 +44,7 @@ export class KnexUserRepository {
   }
 
   async removeUserFromGroup(
-    userId: string
+    userId: string,
   ): Promise<{ groupId: string; userId: string; groupStatus: string }> {
     const trx = await this.knex.transaction();
 
