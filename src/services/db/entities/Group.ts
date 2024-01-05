@@ -1,10 +1,10 @@
 import { Model } from "objection";
-import type { Group } from "../../../core/group.js";
+import type { Group, GroupStatus } from "@/core/group.js";
 
 export class GroupModel extends Model implements Group {
   groupId!: string;
   name!: string;
-  status!: string;
+  status!: GroupStatus;
 
   static tableName = "groups";
 
@@ -21,6 +21,14 @@ export class GroupModel extends Model implements Group {
         name: { type: "string", minLength: 1, maxLength: 255 },
         status: { type: "string", enum: ["NotEmpty", "Empty"] },
       },
+    };
+  }
+
+  toDomainEntity(): Group {
+    return {
+      groupId: this.groupId,
+      name: this.name,
+      status: this.status,
     };
   }
 }

@@ -1,5 +1,4 @@
 import { Model } from "objection";
-import type { Group } from "@/core/group.js";
 import type { User } from "@/core/user.js";
 import { GroupModel } from "./Group.js";
 
@@ -7,7 +6,7 @@ export class UserModel extends Model implements User {
   userId!: string;
   name!: string;
   email!: string;
-  group?: Group;
+  group?: GroupModel;
   groupId?: string;
 
   static get tableName() {
@@ -39,6 +38,16 @@ export class UserModel extends Model implements User {
         email: { type: "string", minLength: 1, maxLength: 255 },
         groupId: { type: "string" },
       },
+    };
+  }
+
+  toDomainEntity(): User {
+    return {
+      userId: this.userId,
+      name: this.name,
+      email: this.email,
+      groupId: this.groupId,
+      group: this.group?.toDomainEntity(),
     };
   }
 }

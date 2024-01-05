@@ -3,17 +3,21 @@ import { ulid } from "ulid";
 import type { User } from "@/core/user.js";
 import { UserModel } from "@/services/db/entities/User.js";
 import { AppError } from "@/app/errors.js";
+import { GroupModel } from "../entities/Group.js";
+
+type UserColumn = keyof Omit<User, "group">;
 
 export class KnexUserRepository {
   constructor(private knex: Knex) {}
 
   async paginate(limit: number = 5, nextToken: string): Promise<{ hasNext: boolean; users: User[] }> {
-    const users = await UserModel.query(this.knex)
+    const result = await UserModel.query(this.knex)
       .withGraphFetched("group")
       .where("userId", ">", nextToken)
       .limit(limit + 1);
 
-    const hasNext = users.length === limit + 1;
+    const hasNext = result.length === limit + 1;
+    const users = result.map((u) => u.toDomainEntity());
 
     if (hasNext) {
       return { hasNext, users: users.slice(0, users.length - 1) };
@@ -32,7 +36,7 @@ export class KnexUserRepository {
       })
       .returning(["userId", "name", "email", "groupId"]);
 
-    return user;
+    return user.toDomainEntity();
   }
 
   async findByName(name: string): Promise<User[]> {
@@ -70,7 +74,10 @@ export class KnexUserRepository {
       let groupStatus = "NotEmpty";
 
       if (countOfUsersInGroup[0].count == 0) {
-        await trx("groups").where({ groupId: targetGroupId }).update({ status: "Empty" }).returning("status");
+        await trx<GroupModel>("groups")
+          .where({ groupId: targetGroupId })
+          .update({ status: "Empty" })
+          .returning("status");
 
         groupStatus = "Empty";
       }
@@ -87,7 +94,9 @@ export class KnexUserRepository {
     }
   }
 
-  private async findBy(col: string, val: string): Promise<User[]> {
-    return await UserModel.query(this.knex).where({ [col]: val });
+  private async findBy(col: UserColumn, val: string): Promise<User[]> {
+    const result = await UserModel.query(this.knex).where(col, "=", val);
+
+    return result.map((u) => u.toDomainEntity());
   }
 }
