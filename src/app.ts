@@ -1,7 +1,7 @@
 import "dotenv/config";
 import fastify from "fastify";
 import { createDbSchema } from "@/services/db/knex.js";
-import { initializeEmailsWorker } from "@/services/emails/worker.js";
+import { worker } from "@/services/emails/worker.js";
 import UserRouter from "@/app/routes/user/user.router.js";
 
 const app = fastify();
@@ -18,10 +18,6 @@ async function main() {
   try {
     await createDbSchema();
 
-    if (process.env["NODE_ENV"] === "production") {
-      await initializeEmailsWorker();
-    }
-
     app.listen({ port: 8000 });
   } catch (er) {
     console.log(er);
@@ -29,3 +25,13 @@ async function main() {
 }
 
 main();
+
+const gracefulShutdown = async (signal: "SIGINT" | "SIGTERM") => {
+  await worker.close();
+  await app.close();
+
+  process.exit(0);
+};
+
+process.on("SIGINT", () => gracefulShutdown("SIGINT"));
+process.on("SIGTERM", () => gracefulShutdown("SIGTERM"));

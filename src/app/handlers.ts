@@ -1,9 +1,11 @@
 import { ZodError } from "zod";
 import { AppError } from "./errors.js";
 
+type HttpStatus = 200 | 201 | 400 | 401 | 403 | 500;
+
 type HandleResult<TData> = {
   data?: TData;
-  status: number;
+  status: HttpStatus;
   error?: unknown;
 };
 

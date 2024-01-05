@@ -1,5 +1,6 @@
 import type { Knex } from "knex";
 import { ulid } from "ulid";
+import type { GroupStatus } from "@/core/group.js";
 import type { User } from "@/core/user.js";
 import { UserModel } from "@/services/db/entities/User.js";
 import { AppError } from "@/app/errors.js";
@@ -71,7 +72,7 @@ export class KnexUserRepository {
         groupId: targetGroupId,
       });
 
-      let groupStatus = "NotEmpty";
+      let groupStatus: GroupStatus = "NotEmpty";
 
       if (countOfUsersInGroup[0].count == 0) {
         await trx<GroupModel>("groups")
