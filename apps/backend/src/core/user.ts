@@ -1,6 +1,6 @@
+import { type Group } from "weft-domain";
 import { userRepository } from "@/services/db/repositories/index.js";
 import { emailsQueue } from "@/services/emails/queue.js";
-import type { Group } from "./group.js";
 
 export interface User {
   userId: string;

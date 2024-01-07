@@ -1,5 +1,5 @@
 import { Model } from "objection";
-import type { Group, GroupStatus } from "@/core/group.js";
+import type { Group, GroupStatus } from "weft-domain";
 
 export class GroupModel extends Model implements Group {
   groupId!: string;

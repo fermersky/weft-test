@@ -1,7 +1,6 @@
 import type { Knex } from "knex";
 import { ulid } from "ulid";
-import type { GroupStatus } from "@/core/group.js";
-import type { User } from "@/core/user.js";
+import type { GroupStatus, User } from "weft-domain";
 import { UserModel } from "@/services/db/entities/User.js";
 import { AppError } from "@/app/errors.js";
 import { GroupModel } from "../entities/Group.js";

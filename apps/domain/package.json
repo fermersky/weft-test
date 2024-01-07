@@ -1,0 +1,17 @@
+{
+  "name": "weft-domain",
+  "version": "1.0.0",
+  "description": "",
+  "type": "module",
+  "main": "dist/index.js",
+  "files": [
+    "./dist/**/*"
+  ],
+  "types": "./dist/index.d.ts",
+  "scripts": {
+    "build": "rimraf ./dist; tsc"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}

@@ -2,36 +2,19 @@
   "name": "weft",
   "version": "1.0.0",
   "description": "",
-  "main": "app.js",
-  "type": "module",
+  "main": "index.js",
   "scripts": {
-    "dev": "run-p dev:*",
-    "dev:watch": "tsx watch ./src/app.ts",
-    "dev:tsc": "tsc -w --noEmit",
-    "build": "rimraf ./dist; esbuild $(find ./src \\( -name '*.ts' \\)) --charset=utf8 --platform=node --packages=external --outdir=dist --format=esm; tsc-alias"
+    "build": "turbo build",
+    "dev": "turbo dev"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
+  "dependencies": {},
   "devDependencies": {
-    "@trivago/prettier-plugin-sort-imports": "^4.3.0",
-    "@types/node": "^20.8.7",
     "esbuild": "^0.19.5",
-    "npm-run-all": "^4.1.5",
     "rimraf": "^5.0.5",
-    "tsc-alias": "^1.8.8",
-    "tsx": "^3.14.0",
-    "typescript": "^5.2.2"
-  },
-  "dependencies": {
-    "bullmq": "^5.1.1",
-    "dotenv": "^16.3.1",
-    "fastify": "^4.25.2",
-    "ioredis": "^5.3.2",
-    "knex": "^3.0.1",
-    "objection": "^3.0.2",
-    "pg": "^8.11.3",
-    "ulid": "^2.3.0",
-    "zod": "^3.22.4"
+    "typescript": "^5.2.2",
+    "turbo": "^1.11.3"
   }
 }

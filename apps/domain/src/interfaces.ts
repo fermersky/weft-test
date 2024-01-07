@@ -5,3 +5,11 @@ export interface Group {
   name: string;
   groupId: string;
 }
+
+export interface User {
+  userId: string;
+  name: string;
+  email: string;
+  group?: Group;
+  groupId?: string;
+}
