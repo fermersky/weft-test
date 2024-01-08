@@ -6,6 +6,7 @@
       "outputs": ["dist/**"]
     },
     "dev": {
+      "dependsOn": ["weft-domain#build"],
       "cache": false,
       "persistent": true
     }

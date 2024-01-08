@@ -2,33 +2,41 @@
 
 ARG NODE_VERSION=20.7.0
 ARG PNPM_VERSION=8.10.2
+ARG TURBO_VERSION=1.11.3
 
 # base
 FROM node:${NODE_VERSION}-alpine as base
 
-WORKDIR /usr/src/app
+ENV PNPM_HOME="/pnpm"
+ENV PATH="$PNPM_HOME:$PATH"
 
-RUN --mount=type=cache,target=/root/.npm \
-    npm install -g pnpm@${PNPM_VERSION}
+WORKDIR /app
 
-# deps
-FROM base as deps
+RUN --mount=type=cache,id=pnpm,target=/pnpm/store \
+    npm install -g pnpm@${PNPM_VERSION} turbo@${TURBO_VERSION}
 
-RUN --mount=type=bind,source=package.json,target=package.json \
-    --mount=type=bind,source=pnpm-lock.yaml,target=pnpm-lock.yaml \
-    --mount=type=cache,target=/root/.local/share/pnpm/store \
-    pnpm install --prod --frozen-lockfile
+# prune
+FROM base as pruned-files
 
-# build
-FROM deps as build
-
-RUN --mount=type=bind,source=package.json,target=package.json \
-    --mount=type=bind,source=pnpm-lock.yaml,target=pnpm-lock.yaml \
-    --mount=type=cache,target=/root/.local/share/pnpm/store \
-    pnpm install --frozen-lockfile
+WORKDIR /app
 
 COPY . .
-RUN pnpm run build
+
+RUN npx turbo prune weft-backend --docker
+
+# build + deps
+FROM base as build-artifact
+
+WORKDIR /app
+
+COPY --from=pruned-files /app/out/json .
+COPY --from=pruned-files /app/out/pnpm-lock.yaml .
+
+RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile
+
+COPY --from=pruned-files /app/out/full .
+
+RUN npx turbo build
 
 # final
 FROM base as final
@@ -37,12 +45,10 @@ ENV NODE_ENV production
 
 USER node
 
-COPY package.json .
+WORKDIR /app
 
-COPY --from=deps /usr/src/app/node_modules ./node_modules
-COPY --from=build /usr/src/app/dist .
-
+COPY --from=build-artifact /app .
 
 EXPOSE 8000
 
-CMD node app.js
+CMD node ./apps/backend/dist/app.js

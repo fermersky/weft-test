@@ -30,6 +30,8 @@
 **/values.dev.yaml
 **/build
 **/dist
+**/out
+**/.turbo
 **/dump.rdb
 LICENSE
 README.md

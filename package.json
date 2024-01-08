@@ -1,11 +1,8 @@
 {
   "name": "weft",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
   "scripts": {
-    "build": "turbo build",
-    "dev": "turbo dev"
+    "build": "npx turbo build",
+    "dev": "npx turbo dev"
   },
   "keywords": [],
   "author": "",
@@ -14,7 +11,7 @@
   "devDependencies": {
     "esbuild": "^0.19.5",
     "rimraf": "^5.0.5",
-    "typescript": "^5.2.2",
-    "turbo": "^1.11.3"
-  }
+    "typescript": "^5.2.2"
+  },
+  "packageManager": "pnpm@8.10.2"
 }

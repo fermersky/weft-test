@@ -18,7 +18,7 @@ async function main() {
   try {
     await createDbSchema();
 
-    app.listen({ port: 8000 });
+    app.listen({ port: 8000, host: "0.0.0.0" });
   } catch (er) {
     console.log(er);
   }

@@ -1,4 +1,5 @@
 import { Queue } from "bullmq";
+import { redisClient } from "../redis/redis-client.js";
 
 export interface SendEmailJob {
   title: string;
@@ -7,6 +8,6 @@ export interface SendEmailJob {
 }
 
 export const OUTBOUND_EMAILS_QUEUE = "outbound_emails";
-export const emailsQueue = new Queue<SendEmailJob>(OUTBOUND_EMAILS_QUEUE);
+export const emailsQueue = new Queue<SendEmailJob>(OUTBOUND_EMAILS_QUEUE, { connection: redisClient });
 
 emailsQueue.obliterate({ force: true });
