@@ -1,11 +1,9 @@
 import type { Knex } from "knex";
 import { ulid } from "ulid";
 import type { GroupStatus, User } from "weft-domain";
-import { UserModel } from "@/services/db/entities/User.js";
+import { type UserColumns, UserModel } from "@/services/db/entities/User.js";
 import { AppError } from "@/app/errors.js";
 import { GroupModel } from "../entities/Group.js";
-
-type UserColumn = keyof Omit<User, "group">;
 
 export class KnexUserRepository {
   constructor(private knex: Knex) {}
@@ -94,7 +92,7 @@ export class KnexUserRepository {
     }
   }
 
-  private async findBy(col: UserColumn, val: string): Promise<User[]> {
+  private async findBy(col: UserColumns, val: string | number): Promise<User[]> {
     const result = await UserModel.query(this.knex).where(col, "=", val);
 
     return result.map((u) => u.toDomainEntity());

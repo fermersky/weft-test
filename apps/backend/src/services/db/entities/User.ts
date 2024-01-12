@@ -2,12 +2,22 @@ import { Model } from "objection";
 import type { User } from "@/core/user.js";
 import { GroupModel } from "./Group.js";
 
-export class UserModel extends Model implements User {
+export interface UserModelSchema {
+  userId: string;
+  name: string;
+  email: string;
+  groupId?: string;
+}
+
+export type UserColumns = keyof UserModelSchema;
+
+export class UserModel extends Model implements UserModelSchema {
   userId!: string;
   name!: string;
   email!: string;
-  group?: GroupModel;
   groupId?: string;
+
+  group?: GroupModel;
 
   static get tableName() {
     return "users";
