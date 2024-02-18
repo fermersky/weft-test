@@ -1,4 +1,6 @@
+import gracefulShutdown from "close-with-grace";
 import "dotenv/config";
+import esMain from "es-main";
 import fastify from "fastify";
 import { createDbSchema } from "@/services/db/knex.js";
 import { worker } from "@/services/emails/worker.js";
@@ -24,14 +26,15 @@ async function main() {
   }
 }
 
-main();
+if (esMain(import.meta)) {
+  main();
+}
 
-const gracefulShutdown = async (signal: "SIGINT" | "SIGTERM") => {
+gracefulShutdown({ delay: 1000 }, async function ({ signal, err }) {
+  if (err) {
+    console.error(err);
+  }
+
   await worker.close();
   await app.close();
-
-  process.exit(0);
-};
-
-process.on("SIGINT", () => gracefulShutdown("SIGINT"));
-process.on("SIGTERM", () => gracefulShutdown("SIGTERM"));
+});
